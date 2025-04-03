@@ -16,7 +16,6 @@ import * as Location from 'expo-location';
 import { ThemedText } from '@/components/ThemedText';
 import { Video } from 'expo-av';
 
-
 export default function HomeScreen() {
   const [screen, setScreen] = useState('home');
   const [email, setEmail] = useState('');
@@ -35,14 +34,11 @@ export default function HomeScreen() {
   const logoOpacity = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
   const buttonOpacity = useRef(new Animated.Value(0)).current;
-
   const [selectedRole, setSelectedRole] = useState(null);
-
   const [otp, setOtp] = useState('');
   const [generatedOtp, setGeneratedOtp] = useState(null);
   const [newPassword, setNewPassword] = useState('');
   const [resetEmail, setResetEmail] = useState('');
-
 
   useEffect(() => {
     Animated.timing(logoOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }).start(() => {
@@ -142,7 +138,6 @@ export default function HomeScreen() {
       setLocation("Location not found");
     }
   };
-
   const sendOtpToEmail = () => {
     if (!resetEmail.includes('@')) {
       Alert.alert('Error', 'Enter a valid email address');
@@ -201,7 +196,6 @@ export default function HomeScreen() {
           <ThemedText type="title" style={styles.authTitle}>
             {selectedRole ? `${selectedRole} Authentication` : 'Authentication'}
           </ThemedText>
-
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.authButton} onPress={() => setScreen('login')}>
               <ThemedText type="defaultSemiBold" style={styles.buttonText}>Login</ThemedText>
@@ -210,7 +204,6 @@ export default function HomeScreen() {
               <ThemedText type="defaultSemiBold" style={styles.buttonText}>Sign Up</ThemedText>
             </TouchableOpacity>
           </View>
-
           <TouchableOpacity style={styles.authBackButton} onPress={() => setScreen('roleSelection')}>
             <ThemedText type="defaultSemiBold" style={styles.buttonText}>Back</ThemedText>
           </TouchableOpacity>
@@ -240,17 +233,14 @@ export default function HomeScreen() {
           <TouchableOpacity style={styles.submitButton} onPress={validateAndLogin}>
             <ThemedText type="defaultSemiBold" style={styles.buttonText}>Submit</ThemedText>
           </TouchableOpacity>
-
           {/* Forgot Password */}
           <TouchableOpacity onPress={() => setScreen('forgotPassword')}>
             <Text style={styles.linkText}>Forgot Password?</Text>
           </TouchableOpacity>
-
           {/* Signup Link */}
           <TouchableOpacity onPress={() => setScreen('signup')}>
             <Text style={styles.linkText}>Don't have an account? <Text style={styles.boldText}>Sign up here</Text></Text>
           </TouchableOpacity>
-
           <TouchableOpacity style={styles.authBackButton} onPress={() => setScreen('auth')}>
             <ThemedText type="defaultSemiBold" style={styles.buttonText}>Back</ThemedText>
           </TouchableOpacity>
@@ -346,7 +336,6 @@ export default function HomeScreen() {
             >
               <ThemedText type="defaultSemiBold" style={styles.buttonText}>Worker</ThemedText>
             </TouchableOpacity>
-
             <TouchableOpacity 
               style={styles.roleButton} 
               onPress={() => { 
@@ -357,7 +346,6 @@ export default function HomeScreen() {
               <ThemedText type="defaultSemiBold" style={styles.buttonText}>Supervisor</ThemedText>
             </TouchableOpacity>
           </View>
-
           <View style={styles.backButtonContainer}>
             <TouchableOpacity style={styles.authBackButton} onPress={() => setScreen('home')}>
               <ThemedText type="defaultSemiBold" style={styles.buttonText}>Back</ThemedText>
@@ -378,23 +366,34 @@ export default function HomeScreen() {
       )}
       {screen === 'imageUpload' && (
         <View style={styles.imageUploadContainer}>
-          <TouchableOpacity style={styles.submitButton} onPress={takePicture}>
-            <ThemedText type="defaultSemiBold" style={styles.buttonText}>Take Picture</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.submitButton} onPress={pickImage}>
-            <ThemedText type="defaultSemiBold" style={styles.buttonText}>Upload from Device</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.authBackButton} onPress={() => setScreen('workerDashboard')}>
-            <ThemedText type="defaultSemiBold" style={styles.buttonText}>Back</ThemedText>
-          </TouchableOpacity>
-          
+          {!image && (
+            <>
+              <TouchableOpacity style={styles.submitButton} onPress={takePicture}>
+                <ThemedText type="defaultSemiBold" style={styles.buttonText}>Take Picture</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.submitButton} onPress={pickImage}>
+                <ThemedText type="defaultSemiBold" style={styles.buttonText}>Upload from Device</ThemedText>
+              </TouchableOpacity>
+            </>
+          )}
           {image && (
             <View>
               <Image source={{ uri: image }} style={styles.previewImage} />
+              
+              {/* 🔄 Retake Button */}
+              <TouchableOpacity style={styles.submitButton} onPress={() => setImage(null)}>
+                <ThemedText type="defaultSemiBold" style={styles.buttonText}>Retake</ThemedText>
+              </TouchableOpacity>
               <TouchableOpacity style={styles.submitButton} onPress={extractLocation}>
                 <ThemedText type="defaultSemiBold" style={styles.buttonText}>Get Location</ThemedText>
               </TouchableOpacity>
-              {/* 🔹 New Remove Image Button */}
+            </View>
+          )}
+          {location && (
+            <View>
+              <Text style={styles.locationText}>Location: {location}</Text>
+              
+              {/* 📤 Upload Button */}
               <TouchableOpacity 
                 style={styles.uploadButton} 
                 onPress={() => {
@@ -409,26 +408,11 @@ export default function HomeScreen() {
               >
                 <ThemedText type="defaultSemiBold" style={styles.buttonText}>Upload</ThemedText>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.authBackButton} onPress={() => setScreen('auth')}>
-                <ThemedText type="defaultSemiBold" style={styles.buttonText}>Back</ThemedText>
-              </TouchableOpacity>
             </View>
           )}
-          {location && (
-            <View>
-              <Text style={styles.locationText}>Location: {location}</Text>
-              {/* 🔹 Updated Upload Button with Explicit onPress Handler */}
-              <TouchableOpacity 
-                style={styles.uploadButton} 
-                onPress={() => {
-                  console.log("Upload Button Pressed"); // Debugging Log
-                  Alert.alert("Success", "Sent to the Supervisor");
-                }}
-              >
-                <ThemedText type="defaultSemiBold" style={styles.buttonText}>Upload</ThemedText>
-              </TouchableOpacity>
-            </View>
-          )}
+          <TouchableOpacity style={styles.authBackButton} onPress={() => setScreen('workerDashboard')}>
+            <ThemedText type="defaultSemiBold" style={styles.buttonText}>Back</ThemedText>
+          </TouchableOpacity>
         </View>
       )}
       {/* Supervisor Dashboard */}
@@ -459,11 +443,11 @@ export default function HomeScreen() {
         <View style={styles.supervisorViewContainer}>
           <Image source={{ uri: latestUpload.image }} style={styles.previewImage} />
           <Text style={styles.locationText}>Location: {latestUpload.location}</Text>
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             style={styles.authBackButton} 
             onPress={() => setScreen('supervisorDashboard')}
           >
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.authBackButton} onPress={() => setScreen('supervisorDashboard')}>
             <ThemedText type="defaultSemiBold" style={styles.buttonText}>Back</ThemedText>
           </TouchableOpacity>
